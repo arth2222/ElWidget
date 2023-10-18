@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Appwidget;
 using Android.Content;
 using Android.Util;
 using Android.Widget;
+using Newtonsoft.Json.Linq;
 
 namespace HelloAppWidget
 {
@@ -37,10 +43,104 @@ namespace HelloAppWidget
 			return widgetView;
 		}
 
-		private void SetTextViewText(RemoteViews widgetView)
+		private async Task<string> GetDataAsync()
+        {
+			var httpClient = new HttpClient();
+			string text = await httpClient.GetStringAsync("https://www.hvakosterstrommen.no/api/v1/prices/2023/10-17_NO2.json");
+			
+
+
+			return text;
+		}
+
+		private string TestAsync()
+        {
+			var task = GetDataAsync();
+			var result = task.Result;
+			return result;
+		}
+
+		private string GetJSON()
+        {
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://www.hvakosterstrommen.no/api/v1/prices/2023/10-17_NO2.json");
+
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "GET";
+            httpWebRequest.UserAgent = "bolle";
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var result = streamReader.ReadToEnd();
+                return result;
+				//JObject jObj = JObject.Parse(result);
+                //JToken data = jObj.SelectToken("properties.timeseries[0].data.instant.details");
+
+                //double temp = data.Value<double>("air_temperature");//key name står i " " - getting key.value
+            }
+        }
+
+
+        private void SetTextViewText(RemoteViews widgetView)
 		{
-			widgetView.SetTextViewText(Resource.Id.widgetMedium, "HelloAppWidget");
+			var data = GetJSON();
+			//var data = TestAsync();
+			int test = data.Length;
+			JArray ja=JArray.Parse(data);
+
+			//foreach (JObject item in ja) // <-- Note that here we used JObject instead of usual JProperty
+			//{
+			//	string price = item.GetValue("NOK_per_kWh").ToString();
+			//	//string url = item.GetValue("url").ToString();
+			//	// ...
+			//}
+			//var value = ja[0].Values()
+			JToken jt = ja[0];//hente et token, det vil si en time m prisinfo
+			double pris= jt.Value<double>("NOK_per_kWh");
+			pris=Math.Round(pris, 2);
+
+			//foreach (var item in ja)
+			//{
+				
+			//	var name = (string)item["NOK_per_kWh"];
+			//}
+
+
+			//try
+			//{
+			//	JObject jObj = JObject.Parse(data);//krasjer
+			//}
+			//catch(Exception ex)
+			//         {
+
+			//         }
+
+
+
+			//JToken jt = jObj.SelectToken("6");
+
+			//var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://www.hvakosterstrommen.no/api/v1/prices/2023/10-17_NO2.json");
+
+			//httpWebRequest.ContentType = "application/json";
+			//httpWebRequest.Method = "GET";
+			//httpWebRequest.UserAgent = "bolle";
+			//var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+
+			//using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+			//{
+			//    var result = streamReader.ReadToEnd();
+			//    JObject jObj = JObject.Parse(result);
+			//    //JToken data = jObj.SelectToken("properties.timeseries[0].data.instant.details");
+
+			//    //double temp = data.Value<double>("air_temperature");//key name står i " " - getting key.value
+			//}
+
+
+
+
+			widgetView.SetTextViewText(Resource.Id.widgetMedium, pris.ToString()); ;
 			widgetView.SetTextViewText(Resource.Id.widgetSmall, string.Format("Last update: {0:H:mm:ss}", DateTime.Now));
+			//widgetView.SetTextViewText(Resource.Id.widgetMedium, pris.ToString());
 		}
 
 		private void RegisterClicks(Context context, int[] appWidgetIds, RemoteViews widgetView)
