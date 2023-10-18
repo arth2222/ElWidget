@@ -20,8 +20,9 @@ public class AppWidget
 	public AppWidget ()
 	{
 		super ();
-		if (getClass () == AppWidget.class)
+		if (getClass () == AppWidget.class) {
 			mono.android.TypeManager.Activate ("HelloAppWidget.AppWidget, HelloAppWidget", "", this, new java.lang.Object[] {  });
+		}
 	}
 
 

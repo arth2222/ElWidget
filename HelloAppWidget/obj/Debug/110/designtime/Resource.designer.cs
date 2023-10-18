@@ -14,7 +14,7 @@ namespace HelloAppWidget
 {
 	
 	
-	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Xamarin.Android.Build.Tasks", "12.3.0.26")]
+	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Xamarin.Android.Build.Tasks", "13.0.0.73")]
 	public partial class Resource
 	{
 		
@@ -69,16 +69,13 @@ namespace HelloAppWidget
 			public const int myButton = 2130837504;
 			
 			// aapt resource value: 0x7F020001
-			public const int widgetAnnouncementIcon = 2130837505;
+			public const int widgetBackground = 2130837505;
 			
 			// aapt resource value: 0x7F020002
-			public const int widgetBackground = 2130837506;
+			public const int widgetMedium = 2130837506;
 			
 			// aapt resource value: 0x7F020003
-			public const int widgetMedium = 2130837507;
-			
-			// aapt resource value: 0x7F020004
-			public const int widgetSmall = 2130837508;
+			public const int widgetSmall = 2130837507;
 			
 			static Id()
 			{

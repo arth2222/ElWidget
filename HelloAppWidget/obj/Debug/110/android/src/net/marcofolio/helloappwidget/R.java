@@ -15,10 +15,9 @@ public final class R {
   }
   public static final class id {
     public static final int myButton=0x7f020000;
-    public static final int widgetAnnouncementIcon=0x7f020001;
-    public static final int widgetBackground=0x7f020002;
-    public static final int widgetMedium=0x7f020003;
-    public static final int widgetSmall=0x7f020004;
+    public static final int widgetBackground=0x7f020001;
+    public static final int widgetMedium=0x7f020002;
+    public static final int widgetSmall=0x7f020003;
   }
   public static final class layout {
     public static final int main=0x7f030000;

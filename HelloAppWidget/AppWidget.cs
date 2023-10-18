@@ -47,9 +47,6 @@ namespace HelloAppWidget
         {
 			var httpClient = new HttpClient();
 			string text = await httpClient.GetStringAsync("https://www.hvakosterstrommen.no/api/v1/prices/2023/10-17_NO2.json");
-			
-
-
 			return text;
 		}
 
@@ -60,9 +57,10 @@ namespace HelloAppWidget
 			return result;
 		}
 
-		private string GetJSON()
+		private string GetJSON(string zone)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://www.hvakosterstrommen.no/api/v1/prices/2023/10-17_NO2.json");
+			zone = zone.ToUpper();
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://www.hvakosterstrommen.no/api/v1/prices/"+DateTime.Now.Year+"/"+DateTime.Now.Month+"-"+DateTime.Now.Day+"_"+zone+".json");
 
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "GET";
@@ -83,7 +81,7 @@ namespace HelloAppWidget
 
         private void SetTextViewText(RemoteViews widgetView)
 		{
-			var data = GetJSON();
+			var data = GetJSON("no1");
 			//var data = TestAsync();
 			int test = data.Length;
 			JArray ja=JArray.Parse(data);
@@ -95,8 +93,9 @@ namespace HelloAppWidget
 			//	// ...
 			//}
 			//var value = ja[0].Values()
-			JToken jt = ja[0];//hente et token, det vil si en time m prisinfo
+			JToken jt = ja[DateTime.Now.Hour];//hente et token, det vil si en time m prisinfo
 			double pris= jt.Value<double>("NOK_per_kWh");
+			pris=pris*1.24;
 			pris=Math.Round(pris, 2);
 
 			//foreach (var item in ja)
@@ -139,7 +138,7 @@ namespace HelloAppWidget
 
 
 			widgetView.SetTextViewText(Resource.Id.widgetMedium, pris.ToString()); ;
-			widgetView.SetTextViewText(Resource.Id.widgetSmall, string.Format("Last update: {0:H:mm:ss}", DateTime.Now));
+			widgetView.SetTextViewText(Resource.Id.widgetSmall, string.Format("{0:H:mm:ss}", DateTime.Now));
 			//widgetView.SetTextViewText(Resource.Id.widgetMedium, pris.ToString());
 		}
 
@@ -153,8 +152,8 @@ namespace HelloAppWidget
 			var piBackground = PendingIntent.GetBroadcast(context, 0, intent, PendingIntentFlags.UpdateCurrent);
 			widgetView.SetOnClickPendingIntent(Resource.Id.widgetBackground, piBackground);
 
-			// Register click event for the Announcement-icon
-			widgetView.SetOnClickPendingIntent(Resource.Id.widgetAnnouncementIcon, GetPendingSelfIntent(context, AnnouncementClick));
+			// Register click event for the Announcement-icon - removed the icon
+			//widgetView.SetOnClickPendingIntent(Resource.Id.widgetAnnouncementIcon, GetPendingSelfIntent(context, AnnouncementClick));
 		}
 
 		private PendingIntent GetPendingSelfIntent(Context context, string action)
